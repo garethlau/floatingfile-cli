@@ -2,6 +2,7 @@ import fire
 import requests
 import os
 import mimetypes
+import errno
 
 API_URL = "http://localhost:5000/api/v5"
 API_KEY = "secretcat"
@@ -28,7 +29,7 @@ def list(code):
         print(name, key)
 
 
-def download(code):
+def download(code, path):
     headers = {"api-key": API_KEY}
     response = requests.get(API_URL + "/spaces/" + code, headers=headers)
     response = response.json()
@@ -44,7 +45,19 @@ def download(code):
     selected_files = map(lambda id: files[int(id)], selected_ids)
     for selected_file in selected_files:
         r = requests.get(selected_file["signedUrl"])
-        open(selected_file["name"], "wb").write(r.content)
+
+        if path is not None:
+            file_path = os.path.join(path, selected_file["name"])
+            if not os.path.exists(os.path.dirname(file_path)):
+                try:
+                    os.makedirs(os.path.dirname(file_path))
+                except OSError as exc:  # Guard against race condition
+                    if exc.errno != errno.EEXIST:
+                        raise
+        else:
+            file_path = selected_file["name"]
+
+        open(file_path, "wb").write(r.content)
 
 
 def upload(code, path):
