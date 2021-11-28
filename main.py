@@ -1,3 +1,4 @@
+from posix import listdir
 import fire
 import requests
 import os
@@ -123,6 +124,31 @@ def download(code, path):
 
 
 def upload(code, path):
+    file_paths = []
+    if os.path.isfile(path):
+        file_paths.append(path)
+    else:
+        print("Which files do you want to upload?")
+
+        for index, file_path in enumerate(os.listdir(path)):
+            print("({index}) {file_path}".format(index=index, file_path=file_path))
+
+        selected_ids = input()
+        selected_ids = selected_ids.split(" ")
+        selected_ids = set(selected_ids)
+
+        selected_file_paths = map(lambda id: os.listdir(path)[int(id)], selected_ids)
+        for selected_file_path in selected_file_paths:
+            file_paths.append(os.path.join(path, selected_file_path))
+    print(file_paths)
+
+    for file_path in file_paths:
+        print("===> Uploading {file_path}".format(file_path=file_path))
+        upload_file(code, file_path)
+        print("===> Done")
+
+
+def upload_file(code, path):
     if not does_exists(code):
         print("The space does not exist.")
         return
