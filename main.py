@@ -37,13 +37,13 @@ def get_files(code):
     return files
 
 
-def destroy(code):
+def destroy_space(code):
     headers = {"api-key": API_KEY}
     requests.delete(API_URL + "/spaces/" + code, headers=headers)
     print("Space deleted.")
 
 
-def create():
+def create_space():
     url = API_URL + "/spaces"
     headers = {"api-key": API_KEY}
     r = requests.post(url, headers=headers)
@@ -52,7 +52,7 @@ def create():
     print("Created a new space: " + code)
 
 
-def list(code):
+def list_files(code):
     try:
         files = get_files(code)
         if files is None:
@@ -65,7 +65,7 @@ def list(code):
         print("Space not found.")
 
 
-def remove(code):
+def remove_files(code):
     files = get_files(code)
     print("Which files(s) would you like to remove?")
     for index, file in enumerate(files):
@@ -96,7 +96,7 @@ def remove(code):
         print(complete_file_name)
 
 
-def download(code, path):
+def download_files(code, path):
     files = get_files(code)
     print("Which file would you like to download?")
     for index, file in enumerate(files):
@@ -125,7 +125,7 @@ def download(code, path):
         open(file_path, "wb").write(r.content)
 
 
-def upload(code, path):
+def upload_files(code, path):
     if not does_exists(code):
         print("The space does not exist.")
         return
@@ -222,4 +222,13 @@ def upload_file(code, path):
 
 
 if __name__ == "__main__":
-    fire.Fire()
+    fire.Fire(
+        {
+            "create": create_space,
+            "destroy": destroy_space,
+            "list": list_files,
+            "remove": remove_files,
+            "download": download_files,
+            "upload": upload_files,
+        }
+    )
