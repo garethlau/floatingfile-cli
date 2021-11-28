@@ -25,6 +25,7 @@ def does_exists(code):
 
 
 def get_files(code):
+    code = code.upper()
     headers = {"api-key": API_KEY}
     response = requests.get(API_URL + "/spaces/" + code, headers=headers)
     if response.status_code == 404:
@@ -38,6 +39,7 @@ def get_files(code):
 
 
 def destroy_space(code):
+    code = code.upper()
     headers = {"api-key": API_KEY}
     requests.delete(API_URL + "/spaces/" + code, headers=headers)
     print("Space deleted.")
@@ -53,6 +55,7 @@ def create_space():
 
 
 def list_files(code):
+    code = code.upper()
     try:
         files = get_files(code)
         if files is None:
@@ -66,6 +69,7 @@ def list_files(code):
 
 
 def remove_files(code):
+    code = code.upper()
     files = get_files(code)
     print("Which files(s) would you like to remove?")
     for index, file in enumerate(files):
@@ -97,6 +101,7 @@ def remove_files(code):
 
 
 def download_files(code, path):
+    code = code.upper()
     files = get_files(code)
     print("Which file would you like to download?")
     for index, file in enumerate(files):
@@ -126,6 +131,7 @@ def download_files(code, path):
 
 
 def upload_files(code, path):
+    code = code.upper()
     if not does_exists(code):
         print("The space does not exist.")
         return
@@ -166,6 +172,7 @@ def upload_files(code, path):
 
 
 def upload_file(code, path):
+    code = code.upper()
     if not does_exists(code):
         print("The space does not exist.")
         return
