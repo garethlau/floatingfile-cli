@@ -9,18 +9,28 @@ API_URL = "http://localhost:5000/api/v5"
 API_KEY = "secretcat"
 
 
+class SpaceNotFoundError(Exception):
+    pass
+
+
 def get_files(code):
     headers = {"api-key": API_KEY}
     response = requests.get(API_URL + "/spaces/" + code, headers=headers)
+    if response.status_code == 404:
+        raise SpaceNotFoundError
+
     response = response.json()
+
     space = response["space"]
     files = space["files"]
     return files
 
+
 def destroy(code):
-    headers = {"api-key":API_KEY}
-    requests.delete(API_URL + "/spaces/" + code,headers=headers)
+    headers = {"api-key": API_KEY}
+    requests.delete(API_URL + "/spaces/" + code, headers=headers)
     print("Space deleted.")
+
 
 def create():
     url = API_URL + "/spaces"
@@ -32,11 +42,16 @@ def create():
 
 
 def list(code):
-    files = get_files(code)
-    for file in files:
-        name = file["name"]
-        key = file["key"]
-        print(name, key)
+    try:
+        files = get_files(code)
+        if files is None:
+            return
+        for file in files:
+            name = file["name"]
+            key = file["key"]
+            print(name, key)
+    except SpaceNotFoundError:
+        print("Space not found.")
 
 
 def remove(code):
