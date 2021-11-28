@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 fire = "*"
 requests = "*"
+pyinstaller = "*"
 
 [dev-packages]
 autopep8 = "*"
