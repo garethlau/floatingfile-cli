@@ -5,6 +5,9 @@ import os
 import mimetypes
 import errno
 import json
+import sys
+import math
+import time
 
 API_URL = "http://localhost:5000/api/v5"
 API_KEY = "secretcat"
@@ -142,10 +145,21 @@ def upload(code, path):
             file_paths.append(os.path.join(path, selected_file_path))
     print(file_paths)
 
-    for file_path in file_paths:
-        print("===> Uploading {file_path}".format(file_path=file_path))
+    total = len(file_paths)
+    for index, file_path in enumerate(file_paths):
+
+        sys.stdout.write("\r")
+        sys.stdout.write(
+            "[%-30s] %d%%"
+            % ("=" * math.floor(index / total * 30), (index / total) * 100)
+        )
+        sys.stdout.flush()
         upload_file(code, file_path)
-        print("===> Done")
+
+    sys.stdout.write("\r")
+    sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
+
+    print("Done!")
 
 
 def upload_file(code, path):
