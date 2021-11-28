@@ -13,6 +13,14 @@ class SpaceNotFoundError(Exception):
     pass
 
 
+def does_exists(code):
+    headers = {"api-key": API_KEY}
+    response = requests.get(API_URL + "/spaces/" + code, headers=headers)
+    if response.status_code == 404:
+        return False
+    return True
+
+
 def get_files(code):
     headers = {"api-key": API_KEY}
     response = requests.get(API_URL + "/spaces/" + code, headers=headers)
@@ -115,9 +123,9 @@ def download(code, path):
 
 
 def upload(code, path):
-    if code is None:
-        raise Exception("Missing code.")
-    print("Uploading")
+    if not does_exists(code):
+        print("The space does not exist.")
+        return
 
     file_size = os.stat(path).st_size
     complete_file_name = path.split("/")[-1]
