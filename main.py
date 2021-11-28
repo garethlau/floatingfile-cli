@@ -189,7 +189,6 @@ def upload_file(code, path):
             json=data,
             headers=headers,
         ).json()
-        print(response)
         signed_url = response["signedUrl"]
         key = response["key"]
 
