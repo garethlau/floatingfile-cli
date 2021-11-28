@@ -8,7 +8,7 @@ import json
 import sys
 import math
 
-API_URL = "http://localhost:5000/api/v5"
+API_URL = "https://developer.floatingfile.space/api/v5"
 API_KEY = "secretcat"
 
 
@@ -168,39 +168,30 @@ def upload_files(code, path):
     sys.stdout.write("\r")
     sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
 
+    sys.stdout.write("\n")
     print("Done!")
 
 
 def upload_file(code, path):
-    code = code.upper()
-    if not does_exists(code):
-        print("The space does not exist.")
-        return
-
     file_size = os.stat(path).st_size
     complete_file_name = path.split("/")[-1]
     file_ext = "." + complete_file_name.split(".")[-1]
     file_name = complete_file_name.split(".")[0]
     file_type = mimetypes.guess_type(path)[0]
-    print(file_name, file_ext, file_size, file_type)
 
     with open(path, "rb") as f:
 
         url = API_URL + "/signed-urls"
         headers = {"api-key": API_KEY}
         data = {"code": code, "file": {"size": file_size}}
-        print(data)
         response = requests.post(
             url,
             json=data,
             headers=headers,
         ).json()
         print(response)
-
         signed_url = response["signedUrl"]
         key = response["key"]
-
-        print(signed_url, key)
 
         response = requests.put(
             signed_url,
@@ -209,7 +200,6 @@ def upload_file(code, path):
         )
         if not (response.status_code == 200):
             print("Error uploading file to AWS")
-            print(response)
 
         data = {
             "size": file_size,
@@ -223,7 +213,6 @@ def upload_file(code, path):
             headers={"api-key": API_KEY},
             data=data,
         )
-        print(response)
 
         f.close()
 
