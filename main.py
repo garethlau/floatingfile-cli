@@ -7,7 +7,6 @@ import errno
 import json
 import sys
 import math
-import time
 
 API_URL = "http://localhost:5000/api/v5"
 API_KEY = "secretcat"
@@ -127,6 +126,10 @@ def download(code, path):
 
 
 def upload(code, path):
+    if not does_exists(code):
+        print("The space does not exist.")
+        return
+
     file_paths = []
     if os.path.isfile(path):
         file_paths.append(path)
