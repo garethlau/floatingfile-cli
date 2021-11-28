@@ -3,6 +3,7 @@ import requests
 import os
 import mimetypes
 import errno
+import json
 
 API_URL = "http://localhost:5000/api/v5"
 API_KEY = "secretcat"
@@ -32,6 +33,37 @@ def list(code):
         name = file["name"]
         key = file["key"]
         print(name, key)
+
+
+def remove(code):
+    files = get_files(code)
+    print("Which files(s) would you like to remove?")
+    for index, file in enumerate(files):
+        complete_file_name = file["name"] + file["ext"]
+        print(
+            "({index}) {complete_file_name}".format(
+                index=index, complete_file_name=complete_file_name
+            )
+        )
+
+    selected_ids = input()
+    selected_ids = selected_ids.split(" ")
+    selected_keys = map(lambda id: files[int(id)]["key"], selected_ids)
+    to_remove = []
+    for selected_key in selected_keys:
+        to_remove.append(selected_key)
+    to_remove = json.dumps(to_remove)
+    headers = {"api-key": API_KEY}
+    params = {"toRemove": to_remove}
+    requests.delete(
+        API_URL + "/spaces/" + code + "/files", headers=headers, params=params
+    )
+    
+    print("Files successfully removed. The remaining files are: ")
+    files = get_files(code)
+    for file in files:
+        complete_file_name = file["name"] + file["ext"]
+        print(complete_file_name)
 
 
 def download(code, path):
