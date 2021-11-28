@@ -8,6 +8,15 @@ API_URL = "http://localhost:5000/api/v5"
 API_KEY = "secretcat"
 
 
+def get_files(code):
+    headers = {"api-key": API_KEY}
+    response = requests.get(API_URL + "/spaces/" + code, headers=headers)
+    response = response.json()
+    space = response["space"]
+    files = space["files"]
+    return files
+
+
 def create():
     url = API_URL + "/spaces"
     headers = {"api-key": API_KEY}
@@ -18,11 +27,7 @@ def create():
 
 
 def list(code):
-    headers = {"api-key": API_KEY}
-    response = requests.get(API_URL + "/spaces/" + code, headers=headers)
-    response = response.json()
-    space = response["space"]
-    files = space["files"]
+    files = get_files(code)
     for file in files:
         name = file["name"]
         key = file["key"]
@@ -30,11 +35,7 @@ def list(code):
 
 
 def download(code, path):
-    headers = {"api-key": API_KEY}
-    response = requests.get(API_URL + "/spaces/" + code, headers=headers)
-    response = response.json()
-    space = response["space"]
-    files = space["files"]
+    files = get_files(code)
     print("Which file would you like to download?")
     for index, file in enumerate(files):
         print("({index}) {file_name} ".format(index=index, file_name=file["name"]))
@@ -44,10 +45,12 @@ def download(code, path):
     selected_ids = selected_ids.split(" ")
     selected_files = map(lambda id: files[int(id)], selected_ids)
     for selected_file in selected_files:
+        print(selected_file)
         r = requests.get(selected_file["signedUrl"])
+        complete_file_name = selected_file["name"] + selected_file["ext"]
 
         if path is not None:
-            file_path = os.path.join(path, selected_file["name"])
+            file_path = os.path.join(path, complete_file_name)
             if not os.path.exists(os.path.dirname(file_path)):
                 try:
                     os.makedirs(os.path.dirname(file_path))
@@ -55,7 +58,7 @@ def download(code, path):
                     if exc.errno != errno.EEXIST:
                         raise
         else:
-            file_path = selected_file["name"]
+            file_path = complete_file_name
 
         open(file_path, "wb").write(r.content)
 
