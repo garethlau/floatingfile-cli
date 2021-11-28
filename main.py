@@ -17,6 +17,10 @@ def get_files(code):
     files = space["files"]
     return files
 
+def destroy(code):
+    headers = {"api-key":API_KEY}
+    requests.delete(API_URL + "/spaces/" + code,headers=headers)
+    print("Space deleted.")
 
 def create():
     url = API_URL + "/spaces"
@@ -58,7 +62,7 @@ def remove(code):
     requests.delete(
         API_URL + "/spaces/" + code + "/files", headers=headers, params=params
     )
-    
+
     print("Files successfully removed. The remaining files are: ")
     files = get_files(code)
     for file in files:
