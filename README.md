@@ -52,7 +52,7 @@ $ 1
 
 ## Roadmap
 
-- [] Error handling and user feedback
-- [] Generate executable binary
-- [] Documentation and usage guides
-- [] Persist code between executions
+- [ ] Error handling and user feedback
+- [ ] Generate executable binary
+- [ ] Documentation and usage guides
+- [ ] Persist code between executions
