@@ -7,13 +7,64 @@ import errno
 import json
 import sys
 import math
+from datetime import datetime, timedelta
 
 API_URL = "https://developer.floatingfile.space/api/v5"
+# API_URL = "http://localhost:5000/api/v5"
 API_KEY = "secretcat"
 
 
 class SpaceNotFoundError(Exception):
     pass
+
+
+class MissingCodeError(Exception):
+    pass
+
+
+def save_code(code):
+    p = os.path.join(os.getenv("HOME"), ".floatingfile", "data.txt")
+    with open(p, "w") as f:
+        f.write("CODE=" + code)
+
+
+def del_code():
+    p = os.path.join(os.getenv("HOME"), ".floatingfile", "data.txt")
+    with open(p, "w") as f:
+        f.write("")
+
+
+def resolve_code(code=None):
+    if code:
+        code = code.upper()
+        # Code was supplied
+        if not does_exists(code):
+            raise SpaceNotFoundError
+        save_code(code)
+        return code
+    else:
+        # Code was not supplied, check storage
+        p = os.path.join(os.getenv("HOME"), ".floatingfile", "data.txt")
+
+        if not os.path.isfile(p):
+            f = open(p, "x")
+            f.close()
+
+        # Open the data file
+        with open(p, "r") as f:
+            line = f.readline()
+            if not line:
+                # There is no saved code
+                raise MissingCodeError
+            saved_code = line.split("=")[1].rstrip()
+
+            if not does_exists(saved_code):
+                del_code()
+                f.close()
+                raise SpaceNotFoundError
+            f.close()
+
+        return saved_code
 
 
 def does_exists(code):
@@ -25,7 +76,6 @@ def does_exists(code):
 
 
 def get_files(code):
-    code = code.upper()
     headers = {"api-key": API_KEY}
     response = requests.get(API_URL + "/spaces/" + code, headers=headers)
     if response.status_code == 404:
@@ -38,8 +88,8 @@ def get_files(code):
     return files
 
 
-def destroy_space(code):
-    code = code.upper()
+def destroy_space(code=None):
+    code = resolve_code(code)
     headers = {"api-key": API_KEY}
     requests.delete(API_URL + "/spaces/" + code, headers=headers)
     print("Space deleted.")
@@ -51,12 +101,13 @@ def create_space():
     r = requests.post(url, headers=headers)
     data = r.json()
     code = data["space"]["code"]
+    save_code(code)
     print("Created a new space: " + code)
 
 
-def list_files(code):
-    code = code.upper()
+def list_files(code=None):
     try:
+        code = resolve_code(code)
         files = get_files(code)
         if files is None:
             return
@@ -68,8 +119,8 @@ def list_files(code):
         print("Space not found.")
 
 
-def remove_files(code):
-    code = code.upper()
+def remove_files(code=None):
+    code = resolve_code(code)
     files = get_files(code)
     print("Which files(s) would you like to remove?")
     for index, file in enumerate(files):
@@ -100,8 +151,8 @@ def remove_files(code):
         print(complete_file_name)
 
 
-def download_files(code, path):
-    code = code.upper()
+def download_files(path, code=None):
+    code = resolve_code(code)
     files = get_files(code)
     print("Which file would you like to download?")
     for index, file in enumerate(files):
@@ -130,13 +181,14 @@ def download_files(code, path):
         open(file_path, "wb").write(r.content)
 
 
-def upload_files(code, path):
-    code = code.upper()
+def upload_files(path, code=None):
+    code = resolve_code(code)
     if not does_exists(code):
         print("The space does not exist.")
         return
 
     file_paths = []
+
     if os.path.isfile(path):
         file_paths.append(path)
     else:
