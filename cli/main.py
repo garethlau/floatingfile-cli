@@ -9,9 +9,11 @@ from .storage import save_code, resolve_code
 from .errors import SpaceNotFoundError
 from .constants import API_KEY, API_URL
 from .utils import get_files, does_exists
+from .printer import p_ok, p_question, p_fail, p_head, p_sub
 
 
 def destroy_space(code=None):
+    p_head()
     code = resolve_code(code)
     headers = {"api-key": API_KEY}
     requests.delete(API_URL + "/spaces/" + code, headers=headers)
@@ -19,16 +21,25 @@ def destroy_space(code=None):
 
 
 def create_space():
+    p_head()
     url = API_URL + "/spaces"
     headers = {"api-key": API_KEY}
     r = requests.post(url, headers=headers)
     data = r.json()
     code = data["space"]["code"]
     save_code(code)
-    print("Created a new space: " + code)
+    print("=" * 20)
+    print(" " * 7 + code)
+    print("=" * 20)
+    print("")
+    p_ok("Done!")
+    p_sub(
+        "The code has been saved and will be used for following commands. If you wish to override this code, you can do so via the --code flag."
+    )
 
 
 def list_files(code=None):
+    p_head()
     try:
         code = resolve_code(code)
         files = get_files(code)
@@ -40,12 +51,14 @@ def list_files(code=None):
             print(name, key)
     except SpaceNotFoundError:
         print("Space not found.")
+    p_ok("Done!")
 
 
 def remove_files(code=None):
+    p_head()
     code = resolve_code(code)
     files = get_files(code)
-    print("Which files(s) would you like to remove?")
+    p_question("Which files(s) would you like to remove?")
     for index, file in enumerate(files):
         complete_file_name = file["name"] + file["ext"]
         print(
@@ -66,18 +79,14 @@ def remove_files(code=None):
     requests.delete(
         API_URL + "/spaces/" + code + "/files", headers=headers, params=params
     )
-
-    print("Files successfully removed. The remaining files are: ")
-    files = get_files(code)
-    for file in files:
-        complete_file_name = file["name"] + file["ext"]
-        print(complete_file_name)
+    p_ok("Done!")
 
 
-def download_files(path, code=None):
+def download_files(path=None, code=None):
+    p_head()
     code = resolve_code(code)
     files = get_files(code)
-    print("Which file would you like to download?")
+    p_question("Which file would you like to download?")
     for index, file in enumerate(files):
         print("({index}) {file_name} ".format(index=index, file_name=file["name"]))
 
@@ -102,12 +111,14 @@ def download_files(path, code=None):
             file_path = complete_file_name
 
         open(file_path, "wb").write(r.content)
+    p_ok("Done!")
 
 
 def upload_files(path, code=None):
+    p_head()
     code = resolve_code(code)
     if not does_exists(code):
-        print("The space does not exist.")
+        p_fail("The space does not exist.")
         return
 
     file_paths = []
@@ -115,7 +126,7 @@ def upload_files(path, code=None):
     if os.path.isfile(path):
         file_paths.append(path)
     else:
-        print("Which files do you want to upload?")
+        p_question("Which files do you want to upload?")
 
         for index, file_path in enumerate(os.listdir(path)):
             print("({index}) {file_path}".format(index=index, file_path=file_path))
@@ -127,7 +138,6 @@ def upload_files(path, code=None):
         selected_file_paths = map(lambda id: os.listdir(path)[int(id)], selected_ids)
         for selected_file_path in selected_file_paths:
             file_paths.append(os.path.join(path, selected_file_path))
-    print(file_paths)
 
     total = len(file_paths)
     for index, file_path in enumerate(file_paths):
@@ -144,7 +154,7 @@ def upload_files(path, code=None):
     sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
 
     sys.stdout.write("\n")
-    print("Done!")
+    p_ok("Done!")
 
 
 def upload_file(code, path):
