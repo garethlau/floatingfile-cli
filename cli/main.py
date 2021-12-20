@@ -5,7 +5,7 @@ import errno
 import json
 import sys
 import math
-from .storage import save_code, resolve_code
+from .storage import save_code, del_code, resolve_code
 from .errors import SpaceNotFoundError
 from .constants import API_KEY, API_URL
 from .utils import get_files, does_exists
@@ -17,7 +17,8 @@ def destroy_space(code=None):
     code = resolve_code(code)
     headers = {"api-key": API_KEY}
     requests.delete(API_URL + "/spaces/" + code, headers=headers)
-    print("Space deleted.")
+    del_code()
+    p_ok("Done!")
 
 
 def create_space():
