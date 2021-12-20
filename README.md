@@ -20,7 +20,7 @@ $ python main.py create
 ### Destroy an existing space
 
 ```
-$ python main.py destroy --code=ABC123
+$ python main.py destroy
 >
 > >>> floatingfile
 >
@@ -72,7 +72,7 @@ $ python main.py list
 ### Remove files
 
 ```
-$ python main.py remove --code=c52505
+$ python main.py remove
 >
 > >>> floatingfile
 >
