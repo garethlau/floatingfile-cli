@@ -6,7 +6,7 @@ import json
 import sys
 import math
 from .storage import save_code, del_code, resolve_code
-from .errors import SpaceNotFoundError
+from .errors import MissingCodeError, SpaceNotFoundError
 from .constants import API_KEY, API_URL
 from .utils import get_files, does_exists
 from .printer import p_ok, p_question, p_fail, p_head, p_sub
@@ -43,21 +43,33 @@ def list_files(code=None):
     p_head()
     try:
         code = resolve_code(code)
-        files = get_files(code)
-        if files is None:
-            return
-        for file in files:
-            name = file["name"]
-            key = file["key"]
-            print(name, key)
     except SpaceNotFoundError:
-        print("Space not found.")
+        p_fail("Space not found.")
+    except MissingCodeError:
+        p_fail("Missing code.")
+
+    files = get_files(code)
+    if files is None or len(files) == 0:
+        print("There are no files.")
+        p_ok("Done!")
+        return
+    for file in files:
+        name = file["name"]
+        key = file["key"]
+        print(name, key)
     p_ok("Done!")
 
 
 def remove_files(code=None):
     p_head()
-    code = resolve_code(code)
+
+    try:
+        code = resolve_code(code)
+    except SpaceNotFoundError:
+        p_fail("Space not found.")
+    except MissingCodeError:
+        p_fail("Missing code.")
+
     files = get_files(code)
     p_question("Which files(s) would you like to remove?")
     for index, file in enumerate(files):
@@ -85,7 +97,13 @@ def remove_files(code=None):
 
 def download_files(path=None, code=None):
     p_head()
-    code = resolve_code(code)
+    try:
+        code = resolve_code(code)
+    except SpaceNotFoundError:
+        p_fail("Space not found.")
+    except MissingCodeError:
+        p_fail("Missing code.")
+
     files = get_files(code)
     p_question("Which file would you like to download?")
     for index, file in enumerate(files):
@@ -117,7 +135,13 @@ def download_files(path=None, code=None):
 
 def upload_files(path, code=None):
     p_head()
-    code = resolve_code(code)
+    try:
+        code = resolve_code(code)
+    except SpaceNotFoundError:
+        p_fail("Space not found.")
+    except MissingCodeError:
+        p_fail("Missing code.")
+
     if not does_exists(code):
         p_fail("The space does not exist.")
         return
