@@ -1,6 +1,21 @@
-<h1 style="text-align:center; color: #435EE9;">The Official CLI for floatingfile</h1>
+# The Official CLI for floatingfile
 
 ![](/.github/assets/banner.jpg)
+
+[floatingfile](https://floatingfile.space) is a file sharing platform that marries the flexibility of file storage applications with the convenience of file transfer applications.
+
+## Functions
+
+At the moment, the CLI has not reached feature parity with the web and iOS applications, but this is the goal.
+
+- [x] Create a space
+- [x] Destroy a space
+- [x] Upload a file (or files)
+- [x] Remove a file (or files)
+- [x] Download a file (or files)
+- [x] View files
+- [ ] View users
+- [ ] View space's history (logs)
 
 ## Usage
 
