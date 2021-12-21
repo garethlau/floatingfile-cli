@@ -35,12 +35,14 @@ _You may need to enable the execution permission for the script by running: `chm
 $ ./scripts/bundle.sh
 ```
 
-This will generate a `dist` folder that contains a single executable file.
+This will generate a `dist` folder that contains the executable, `floatingfile`, as well as all necessary dependencies.
 
-3. Copy (or move) the executable to `/usr/local/bin` for global access. By default, Mac OS X has it in the `PATH`.
+3. Create a symlink for global access.
+
+By default, Mac OS X has `/usr/local/bin` in the `PATH`.
 
 ```
-$ cp ./dist/floatingfile /usr/local/bin/
+$ ln -s "$PWD/dist/floatingfile/floatingfile" /usr/local/bin
 ```
 
 4. Check that the executable is accessible
