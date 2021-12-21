@@ -21,7 +21,7 @@ def destroy_space(code=None):
     code = resolve_code(code)
     headers = {"api-key": API_KEY}
     requests.delete(API_URL + "/spaces/" + code, headers=headers)
-    del_code()
+    del_code(code)
     p_ok("Done!")
 
 

@@ -1,6 +1,13 @@
 import requests
+from datetime import timedelta, datetime
 from .errors import SpaceNotFoundError
 from .constants import API_KEY, API_URL
+
+
+def is_expired(created_at):
+    expires_at = created_at + timedelta(hours=12)
+    now = datetime.now()
+    return now < expires_at
 
 
 def does_exists(code):

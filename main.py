@@ -7,6 +7,7 @@ from cli.main import (
     download_files,
     upload_files,
 )
+from cli.storage import get_codes
 
 if __name__ == "__main__":
     fire.Fire(
@@ -17,5 +18,6 @@ if __name__ == "__main__":
             "remove": remove_files,
             "download": download_files,
             "upload": upload_files,
+            "codes": get_codes,
         }
     )
