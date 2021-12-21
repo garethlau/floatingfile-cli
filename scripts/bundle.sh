@@ -1,1 +1,1 @@
-pipenv run pyinstaller main.py --onefile --name floatingfile
+pipenv run pyinstaller main.py --name floatingfile
