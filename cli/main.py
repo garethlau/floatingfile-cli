@@ -13,6 +13,10 @@ from .printer import p_ok, p_question, p_fail, p_head, p_sub
 
 
 def destroy_space(code=None):
+    """
+    Destroys a space.
+    :param code: Code of the space to be destroyed. If no code is provided, an attempt will be made to use the code saved in memory.
+    """
     p_head()
     code = resolve_code(code)
     headers = {"api-key": API_KEY}
@@ -22,6 +26,9 @@ def destroy_space(code=None):
 
 
 def create_space():
+    """
+    Create a space. This will overwrite the code saved in memory.
+    """
     p_head()
     url = API_URL + "/spaces"
     headers = {"api-key": API_KEY}
@@ -40,6 +47,10 @@ def create_space():
 
 
 def list_files(code=None):
+    """
+    List all the files in the space.
+    :param code: Code of the space to view the files of. If no code is provided, an attempt will be made to use the code saved in memory.
+    """
     p_head()
     try:
         code = resolve_code(code)
@@ -61,6 +72,10 @@ def list_files(code=None):
 
 
 def remove_files(code=None):
+    """
+    Interactively remove files from a space.
+    :param code: Code of the space to remove files from. If no code is provided, an attempt will be made to use the code saved in memory.
+    """
     p_head()
 
     try:
@@ -96,6 +111,11 @@ def remove_files(code=None):
 
 
 def download_files(path=None, code=None):
+    """
+    Download files from a space.
+    :param path: Path of directory to download files into. If no path is provided, the files will be downloaded into the current working directory.
+    :param code: Code of the space to download files from. If no code is provided, an attempt will be made to use the code saved in memory.
+    """
     p_head()
     try:
         code = resolve_code(code)
@@ -134,6 +154,11 @@ def download_files(path=None, code=None):
 
 
 def upload_files(path, code=None):
+    """
+    Upload files to a space.
+    :param path: Path to file or directory. If the path provided is a directory, then an interactive prompt will be displayed to select which files in the directory are to be uploaded. If the path is a file, then the file will be uploaded.
+    :param code: Code of the space to upload files to. If no code is provided, an attempt will be made to use the code saved in memory.
+    """
     p_head()
     try:
         code = resolve_code(code)
