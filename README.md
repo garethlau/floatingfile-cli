@@ -18,6 +18,57 @@ At the moment, the CLI has not reached feature parity with the web and iOS appli
 - [ ] View space's history (logs)
 - [ ] Download files as zip
 
+## Installation
+
+1. Clone the repository
+
+```
+$ git clone https://github.com/garethlau/floatingfile-cli.git
+$ cd floatingfile-cli
+```
+
+2. Bundle the app
+
+_You may need to enable the execution permission for the script by running: `chmod +x ./scripts/bundle.sh`
+This will generate a `dist` folder that contains a single executable file._
+
+```
+$ ./scripts/bundle.sh
+```
+
+3. Copy (or move) the executable to `/usr/local/bin` for global access. By default, Mac OS X has it in the `PATH`.
+
+```
+$ cp ./dist/floatingfile /usr/local/bin/
+```
+
+4. Check that the executable is accessible
+
+```
+$ which floatingfile
+> /usr/local/bin/floatingfile
+```
+
+5. OPTIONAL: You can rename the executable for easier usage.
+
+```
+$ mv /usr/local/bin/floatingfile /usr/local/bin/ff
+```
+
+The floatingfile CLI is now accessible via `ff`. For example:
+
+```
+$ ff create -h
+> NAME
+>    ff create - Create a space. This will overwrite the code saved in memory.
+>
+> SYNOPSIS
+>    ff create -
+>
+> DESCRIPTION
+>    Create a space. This will overwrite the code saved in memory.
+```
+
 ## Usage
 
 ### Create a new space
