@@ -29,12 +29,13 @@ $ cd floatingfile-cli
 
 2. Bundle the app
 
-_You may need to enable the execution permission for the script by running: `chmod +x ./scripts/bundle.sh`
-This will generate a `dist` folder that contains a single executable file._
+_You may need to enable the execution permission for the script by running: `chmod +x ./scripts/bundle.sh`._
 
 ```
 $ ./scripts/bundle.sh
 ```
+
+This will generate a `dist` folder that contains a single executable file.
 
 3. Copy (or move) the executable to `/usr/local/bin` for global access. By default, Mac OS X has it in the `PATH`.
 
@@ -158,3 +159,4 @@ $ 0
 - [ ] Generate executable binary
 - [ ] Documentation and usage guides
 - [x] Persist code between executions
+- [ ] Keep a record of visited, active spaces and allow users to swap between spaces
