@@ -133,8 +133,14 @@ def download_files(path=None, code=None):
 
     selected_ids = selected_ids.split(" ")
     selected_files = map(lambda id: files[int(id)], selected_ids)
+    total = len(selected_ids)
     for selected_file in selected_files:
-        print(selected_file)
+        sys.stdout.write("\r")
+        sys.stdout.write(
+            "[%-30s] %d%%"
+            % ("=" * math.floor(index / total * 30), (index / total) * 100)
+        )
+        sys.stdout.flush()
         r = requests.get(selected_file["signedUrl"])
         complete_file_name = selected_file["name"] + selected_file["ext"]
 
@@ -150,6 +156,10 @@ def download_files(path=None, code=None):
             file_path = complete_file_name
 
         open(file_path, "wb").write(r.content)
+
+    sys.stdout.write("\r")
+    sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
+    sys.stdout.write("\n")
     p_ok("Done!")
 
 
