@@ -1,4 +1,6 @@
-# The Official CLI for floatingfile
+<h1 style="text-align:center; color: #435EE9;">The Official CLI for floatingfile</h1>
+
+![](/.github/assets/banner.jpg)
 
 ## Usage
 
