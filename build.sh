@@ -1,1 +1,0 @@
-pipenv run pyinstaller main.py --name floatingfile
