@@ -16,6 +16,7 @@ At the moment, the CLI has not reached feature parity with the web and iOS appli
 - [x] View files
 - [ ] View users
 - [ ] View space's history (logs)
+- [ ] Download files as zip
 
 ## Usage
 
