@@ -7,7 +7,12 @@ from .constants import API_KEY, API_URL
 def is_expired(created_at):
     expires_at = created_at + timedelta(hours=12)
     now = datetime.now()
-    return now < expires_at
+    # print("Now: ", now)
+    # print("Created At: ", created_at)
+    # print("Expires At: ", expires_at)
+    # print("Diff: ", expires_at - now)
+    # print(timedelta(seconds=12))
+    return expires_at - now < timedelta(seconds=0)
 
 
 def does_exists(code):
