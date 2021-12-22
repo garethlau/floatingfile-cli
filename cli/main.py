@@ -22,6 +22,7 @@ def destroy_space(code=None):
     headers = {"api-key": API_KEY}
     requests.delete(API_URL + "/spaces/" + code, headers=headers)
     del_code(code)
+    # TODO: If the deleted code was the default code, notify the user of the new default
     p_ok("Done!")
 
 
@@ -31,6 +32,7 @@ def create_space():
     """
     p_head()
     url = API_URL + "/spaces"
+    # TODO: This headers object is replicated everywhere. Move into base_header var.
     headers = {"api-key": API_KEY}
     r = requests.post(url, headers=headers)
     data = r.json()
