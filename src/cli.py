@@ -5,7 +5,7 @@ import errno
 import json
 import sys
 import math
-from .storage import save_code, del_code, resolve_code
+from .storage import save_code, del_code, resolve_code, get_codes
 from .errors import MissingCodeError, SpaceNotFoundError
 from .utils import get_files, does_exists
 from .printer import p_ok, p_question, p_fail, p_head, p_sub
@@ -261,3 +261,15 @@ def upload_file(code, path):
         )
 
         f.close()
+
+
+def spaces():
+    """
+    List recently accessed spaces.
+    """
+    codes = get_codes()
+    for index, code in enumerate(codes):
+        if index == 0:
+            p_ok("(default) {code}".format(index=index, code=code))
+        else:
+            print("({index}) {code}".format(index=index, code=code))

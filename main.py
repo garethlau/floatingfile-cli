@@ -6,6 +6,7 @@ from src.cli import (
     remove_files,
     download_files,
     upload_files,
+    spaces,
 )
 
 
@@ -18,5 +19,6 @@ if __name__ == "__main__":
             "remove": remove_files,
             "download": download_files,
             "upload": upload_files,
+            "spaces": spaces,
         }
     )
