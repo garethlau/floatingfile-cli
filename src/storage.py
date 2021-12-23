@@ -67,19 +67,19 @@ def set_default():
 
     # TODO: There has to be a better way of finding an item and moving it the front
     for index, d in enumerate(data):
-        code = d["code"]
         if index == int(selection):
-            sd = d
+            default = d
+            break
 
-    data.remove(sd)
-    data.insert(0, sd)
+    data.remove(default)
+    data.insert(0, default)
 
     with open(filename, "wb") as f:
         pickle.dump(data, f)
         f.close()
 
     p_ok("Done!")
-    p_sub("The default space is now {code}".format(code=sd["code"]))
+    p_sub("The default space is now {code}".format(code=default["code"]))
 
 
 def del_code(code):
