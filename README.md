@@ -161,4 +161,4 @@ $ 0
 - [ ] Generate executable binary
 - [ ] Documentation and usage guides
 - [x] Persist code between executions
-- [ ] Keep a record of visited, active spaces and allow users to swap between spaces
+- [x] Keep a record of visited, active spaces and allow users to swap between spaces
