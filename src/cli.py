@@ -7,9 +7,9 @@ import sys
 import math
 from .storage import save_code, del_code, resolve_code
 from .errors import MissingCodeError, SpaceNotFoundError
-from .constants import API_KEY, API_URL
 from .utils import get_files, does_exists
 from .printer import p_ok, p_question, p_fail, p_head, p_sub
+from .config import API_URL, API_KEY
 
 
 def destroy_space(code=None):

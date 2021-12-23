@@ -1,7 +1,7 @@
 import requests
 from requests.api import head
 from .errors import SpaceNotFoundError
-from .constants import API_KEY, API_URL
+from .config import API_URL, API_KEY
 
 
 def get_space(code):
