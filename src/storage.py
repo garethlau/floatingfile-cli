@@ -28,25 +28,23 @@ def save_code(code):
         f.close()
 
 
-# TODO: This method should only be responsible for retreiving the objects from memory.
-# It should not be responsible for displaying the results to the user
 def get_codes():
+    codes = []
     if not mem_exists():
-        print("There are no saved spaces.")
-        return
+        return codes
 
     with open(filename, "rb") as f:
         data = pickle.load(f)
         f.close()
 
-    print("  Code  ")
     for d in data:
         code = d["code"]
-
         if does_exists(code):
-            print(" {code} ".format(code=code))
+            codes.append(code)
         else:
             del_code(code)
+
+    return codes
 
 
 # TODO: Better name for setting the default code. This method should also be moved out of storage.py.
