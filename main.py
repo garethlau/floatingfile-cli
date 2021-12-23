@@ -1,5 +1,5 @@
 import fire
-from src.main import (
+from src.cli import (
     create_space,
     destroy_space,
     list_files,
