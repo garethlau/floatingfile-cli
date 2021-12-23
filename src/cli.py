@@ -9,7 +9,7 @@ from .storage import save_code, del_code, resolve_code, get_codes
 from .errors import MissingCodeError, SpaceNotFoundError
 from .utils import get_files, does_exists
 from .printer import p_ok, p_question, p_fail, p_head, p_sub
-from .config import API_URL, API_KEY
+from .config import API_URL, BASE_HEADERS
 
 
 def destroy_space(code=None):
@@ -19,8 +19,7 @@ def destroy_space(code=None):
     """
     p_head()
     code = resolve_code(code)
-    headers = {"api-key": API_KEY}
-    requests.delete(API_URL + "/spaces/" + code, headers=headers)
+    requests.delete(API_URL + "/spaces/" + code, headers=BASE_HEADERS)
     del_code(code)
     # TODO: If the deleted code was the default code, notify the user of the new default
     p_ok("Done!")
@@ -32,9 +31,7 @@ def create_space():
     """
     p_head()
     url = API_URL + "/spaces"
-    # TODO: This headers object is replicated everywhere. Move into base_header var.
-    headers = {"api-key": API_KEY}
-    r = requests.post(url, headers=headers)
+    r = requests.post(url, headers=BASE_HEADERS)
     data = r.json()
     code = data["space"]["code"]
     save_code(code)
@@ -104,10 +101,9 @@ def remove_files(code=None):
     for selected_key in selected_keys:
         to_remove.append(selected_key)
     to_remove = json.dumps(to_remove)
-    headers = {"api-key": API_KEY}
     params = {"toRemove": to_remove}
     requests.delete(
-        API_URL + "/spaces/" + code + "/files", headers=headers, params=params
+        API_URL + "/spaces/" + code + "/files", headers=BASE_HEADERS, params=params
     )
     p_ok("Done!")
 
@@ -229,12 +225,11 @@ def upload_file(code, path):
     with open(path, "rb") as f:
 
         url = API_URL + "/signed-urls"
-        headers = {"api-key": API_KEY}
         data = {"code": code, "file": {"size": file_size}}
         response = requests.post(
             url,
             json=data,
-            headers=headers,
+            headers=BASE_HEADERS,
         ).json()
         signed_url = response["signedUrl"]
         key = response["key"]
@@ -256,7 +251,7 @@ def upload_file(code, path):
         }
         response = requests.patch(
             API_URL + "/spaces/" + code + "/files",
-            headers={"api-key": API_KEY},
+            headers=BASE_HEADERS,
             data=data,
         )
 

@@ -5,3 +5,6 @@ load_dotenv()
 
 API_URL = os.getenv("API_URL")
 API_KEY = os.getenv("API_KEY")
+
+
+BASE_HEADERS = {"api-key": API_KEY}
