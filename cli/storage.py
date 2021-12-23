@@ -1,15 +1,14 @@
 import os
 import pickle
-from datetime import datetime, timedelta
 from .errors import SpaceNotFoundError, MissingCodeError
-from .utils import does_exists, is_expired
+from .utils import does_exists
 from .printer import p_ok, p_question, p_sub
 
-p = os.path.join(os.getenv("HOME"), ".floatingfile", "data.pkl")
+filename = os.path.join(os.getenv("HOME"), ".floatingfile", "data.pkl")
 
 
 def mem_exists():
-    return os.path.isfile(p)
+    return os.path.isfile(filename)
 
 
 def save_code(code):
@@ -17,14 +16,14 @@ def save_code(code):
     if not mem_exists():
         data = []
     else:
-        f = open(p, "rb")
+        f = open(filename, "rb")
         data = pickle.load(f)
         f.close()
 
-    # TODO: Fix created at logic. Spaces aren't always created via cli
-    data.insert(0, {"code": code, "created_at": datetime.now()})
+    data.insert(0, {"code": code})
 
-    with open(p, "w+b") as f:
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, "wb+") as f:
         pickle.dump(data, f)
         f.close()
 
@@ -36,31 +35,28 @@ def get_codes():
         print("There are no saved spaces.")
         return
 
-    with open(p, "rb") as f:
+    with open(filename, "rb") as f:
         data = pickle.load(f)
         f.close()
 
-    print("  Code  | Created At")
+    print("  Code  ")
     for d in data:
         code = d["code"]
-        created_at = d["created_at"]
 
-        if is_expired(created_at):
-            print("expired")
-            del_code(code)
+        if does_exists(code):
+            print(" {code} ".format(code=code))
         else:
-            # TODO: Format created at date
-            print(" {code} | {created_at}".format(code=code, created_at=created_at))
+            del_code(code)
 
 
 # TODO: Better name for setting the default code. This method should also be moved out of storage.py.
 def set_default():
-    with open(p, "rb") as f:
+    with open(filename, "rb") as f:
         data = pickle.load(f)
         f.close()
 
     p_question("Which space do you want to set as the default?")
-    data = list(filter(lambda d: not is_expired(d["created_at"]), data))
+    data = list(filter(lambda d: does_exists(d["code"]), data))
 
     for index, d in enumerate(data):
         code = d["code"]
@@ -80,7 +76,7 @@ def set_default():
     data.remove(sd)
     data.insert(0, sd)
 
-    with open(p, "wb") as f:
+    with open(filename, "wb") as f:
         pickle.dump(data, f)
         f.close()
 
@@ -89,36 +85,36 @@ def set_default():
 
 
 def del_code(code):
-    with open(p, "rb") as f:
+    with open(filename, "rb") as f:
         data = pickle.load(f)
         f.close()
 
     data = [x for x in data if x["code"] != code]
 
-    with open(p, "wb") as f:
+    with open(filename, "wb") as f:
         pickle.dump(data, f)
         f.close()
 
 
 def resolve_code(code=None):
     if code:
-        code = code.upper()
         # Code was supplied
+        code = code.upper()
         if not does_exists(code):
             raise SpaceNotFoundError
+
         save_code(code)
         return code
     else:
         # Code was not supplied, check storage
-
-        if not os.path.isfile(p):
-            f = open(p, "x")
+        if not mem_exists():
+            f = open(filename, "x")
             f.close()
             raise MissingCodeError
 
         # Open the data file
 
-        with open(p, "rb") as f:
+        with open(filename, "rb") as f:
             data = pickle.load(f)
             f.close()
 
@@ -126,11 +122,6 @@ def resolve_code(code=None):
             raise MissingCodeError
 
         code = data[0]["code"]
-        created_at = data[0]["created_at"]
-
-        if is_expired(created_at):
-            del_code(code)
-            raise SpaceNotFoundError
 
         if not does_exists(code):
             # The code no longer maps to an existing space, remove it from memory
