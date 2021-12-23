@@ -35,11 +35,9 @@ def create_space():
     data = r.json()
     code = data["space"]["code"]
     save_code(code)
-    print("=" * 20)
-    print(" " * 7 + code)
-    print("=" * 20)
+    print("Your newly created space can be accessed here:")
+    print("https://app.floatingfile.space/s/{code}".format(code=code))
     print("")
-    p_ok("Done!")
     p_sub(
         "The code has been saved and will be used for following commands. If you wish to override this code, you can do so via the --code flag."
     )
