@@ -267,6 +267,7 @@ def spaces():
     """
     List recently accessed spaces.
     """
+    p_head()
     codes = get_codes()
     for index, code in enumerate(codes):
         if index == 0:
