@@ -15,7 +15,7 @@ if __name__ == "__main__":
         {
             "create": create_space,
             "destroy": destroy_space,
-            "list": list_files,
+            "files": list_files,
             "remove": remove_files,
             "download": download_files,
             "upload": upload_files,
