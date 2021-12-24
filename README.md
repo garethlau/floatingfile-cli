@@ -42,7 +42,7 @@ This will generate a `dist` folder that contains the executable, `floatingfile`,
 By default, Mac OS X has `/usr/local/bin` in the `PATH`.
 
 ```
-$ ln -s "$PWD/dist/floatingfile/floatingfile" /usr/local/bin
+$ sudo ln -s "$PWD/dist/floatingfile/floatingfile" /usr/local/bin
 ```
 
 4. Check that the executable is accessible
