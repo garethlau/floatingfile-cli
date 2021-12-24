@@ -83,6 +83,7 @@ def remove_files(code=None, a=False):
     """
     Interactively remove files from a space.
     :param code: Code of the space to remove files from. If no code is provided, an attempt will be made to use the code saved in memory.
+    :param a: Removes all files from the space.
     """
     p_head()
 
@@ -131,6 +132,7 @@ def download_files(path=None, code=None, a=False):
     Download files from a space.
     :param path: Path of directory to download files into. If no path is provided, the files will be downloaded into the current working directory.
     :param code: Code of the space to download files from. If no code is provided, an attempt will be made to use the code saved in memory.
+    :param a: Downloads all files from the space.
     """
     p_head()
     download_all = a
@@ -185,6 +187,7 @@ def upload_files(path, code=None, a=False):
     Upload files to a space.
     :param path: Path to file or directory. If the path provided is a directory, then an interactive prompt will be displayed to select which files in the directory are to be uploaded. If the path is a file, then the file will be uploaded.
     :param code: Code of the space to upload files to. If no code is provided, an attempt will be made to use the code saved in memory.
+    :param a: Uploads all files in the directory. Has no effect if the path provided is to a file.
     """
     p_head()
     upload_all = a
