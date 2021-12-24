@@ -60,13 +60,13 @@ $ which floatingfile
 > /usr/local/bin/floatingfile
 ```
 
-5. OPTIONAL: You can rename the executable for easier usage.
+5. **OPTIONAL** but recommended: You can rename the executable for easier usage.
 
 ```
 $ mv /usr/local/bin/floatingfile /usr/local/bin/ff
 ```
 
-The floatingfile CLI is now accessible via `ff`. For example:
+The floatingfile CLI is now accessible via the `ff` command. For example:
 
 ```
 $ ff create -h
@@ -85,22 +85,20 @@ $ ff create -h
 ### Create a new space
 
 ```
-$ python main.py create
+$ floatingfile create
 >
 > >>> floatingfile
 >
-> ====================
->        420293
-> ====================
+> Your newly created space can be accessed here:
+> https://app.floatingfile.space/s/6B1574
 >
-> Done!
 > The code has been saved and will be used for following commands. If you wish to override this code, you can do so via the --code flag.
 ```
 
 ### Destroy an existing space
 
 ```
-$ python main.py destroy
+$ floatingfile destroy
 >
 > >>> floatingfile
 >
@@ -110,7 +108,7 @@ $ python main.py destroy
 ### Download files
 
 ```
-$ python main.py download
+$ floatingfile download
 >
 > >>> floatingfile
 >
@@ -124,7 +122,7 @@ $ 0
 ### Upload files
 
 ```
-$ python main.py upload ./test_files
+$ floatingfile upload ./test_files
 >
 > >>> floatingfile
 >
@@ -140,7 +138,7 @@ $ 0 2
 ### List files
 
 ```
-$ python main.py files
+$ floatingfile files
 >
 > >>> floatingfile
 >
@@ -152,7 +150,7 @@ $ python main.py files
 ### Remove files
 
 ```
-$ python main.py remove
+$ floatingfile remove
 >
 > >>> floatingfile
 >
