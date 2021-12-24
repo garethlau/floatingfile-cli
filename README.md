@@ -140,7 +140,7 @@ $ 0 2
 ### List files
 
 ```
-$ python main.py list
+$ python main.py files
 >
 > >>> floatingfile
 >
