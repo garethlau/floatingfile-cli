@@ -211,8 +211,7 @@ def upload_files(path, code=None, a=False):
         )
         if upload_all:
             p_info("Uploading all files")
-            for x in paths:
-                file_paths.append(os.path.join(path, x))
+            file_paths = list(map(lambda x: os.path.join(path, x), paths))
         else:
             p_question("Which files do you want to upload?")
 
@@ -224,10 +223,7 @@ def upload_files(path, code=None, a=False):
             except ValueError:
                 p_fail("Invalid input value detected.")
                 return
-
-            selected_file_paths = map(lambda index: os.listdir(path)[index], indexes)
-            for selected_file_path in selected_file_paths:
-                file_paths.append(os.path.join(path, selected_file_path))
+            file_paths = list(map(lambda x: os.path.join(path, paths[x]), indexes))
 
     try:
         for file_path in progress_bar(file_paths, prefix="Progress:", length=cols - 20):
