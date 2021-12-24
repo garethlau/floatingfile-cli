@@ -19,7 +19,15 @@ def destroy_space(code=None):
     :param code: Code of the space to be destroyed. If no code is provided, an attempt will be made to use the code saved in memory.
     """
     p_head()
-    code = resolve_code(code)
+    try:
+        code = resolve_code(code)
+    except SpaceNotFoundError:
+        p_fail("Space not found.")
+        return
+    except MissingCodeError:
+        p_fail("Missing required param: code.")
+        return
+
     requests.delete(API_URL + "/spaces/" + code, headers=BASE_HEADERS)
     del_code(code)
     # TODO: If the deleted code was the default code, notify the user of the new default
@@ -54,8 +62,10 @@ def list_files(code=None):
         code = resolve_code(code)
     except SpaceNotFoundError:
         p_fail("Space not found.")
+        return
     except MissingCodeError:
-        p_fail("Missing code.")
+        p_fail("Missing required param: code.")
+        return
 
     files = get_files(code)
     if files is None or len(files) == 0:
@@ -80,8 +90,10 @@ def remove_files(code=None):
         code = resolve_code(code)
     except SpaceNotFoundError:
         p_fail("Space not found.")
+        return
     except MissingCodeError:
-        p_fail("Missing code.")
+        p_fail("Missing required param: code.")
+        return
 
     files = get_files(code)
     p_question("Which files(s) would you like to remove?")
@@ -117,8 +129,10 @@ def download_files(path=None, code=None):
         code = resolve_code(code)
     except SpaceNotFoundError:
         p_fail("Space not found.")
+        return
     except MissingCodeError:
-        p_fail("Missing code.")
+        p_fail("Missing required param: code.")
+        return
 
     files = get_files(code)
     p_question("Which file would you like to download?")
@@ -174,11 +188,9 @@ def upload_files(path, code=None):
         code = resolve_code(code)
     except SpaceNotFoundError:
         p_fail("Space not found.")
+        return
     except MissingCodeError:
-        p_fail("Missing code.")
-
-    if not does_exists(code):
-        p_fail("The space does not exist.")
+        p_fail("Missing required param: code.")
         return
 
     file_paths = []
