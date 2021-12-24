@@ -3,7 +3,7 @@ import os
 import mimetypes
 import errno
 import json
-from .storage import save_code, del_code, resolve_code, get_codes
+from .storage import save_code, del_code, resolve_code, get_codes, set_codes
 from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
 from .utils import get_files, index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
@@ -287,14 +287,45 @@ def upload_file(code, path):
         f.close()
 
 
-def spaces():
+def spaces(default=None):
     """
     List recently accessed spaces.
     """
     p_head()
+
     codes = get_codes()
-    for index, code in enumerate(codes):
-        if index == 0:
-            p_ok("(default) {code}".format(index=index, code=code))
-        else:
-            print("({index}) {code}".format(index=index, code=code))
+    if len(codes) == 0:
+        print("There are no spaces.")
+        return
+    if default == True:
+        p_question("Which space do you want to set as the default?")
+
+        for index, code in enumerate(codes):
+            if index == 0:
+                p_ok("(default) {code}".format(index=index, code=code))
+            else:
+                print("({index}) {code}".format(index=index, code=code))
+
+        selection = input()
+
+        for index, code in enumerate(codes):
+            if index == int(selection):
+                default_code = code
+                break
+
+        codes.remove(default_code)
+        codes.insert(0, default_code)
+        set_codes(codes)
+
+        p_ok("Done!")
+        p_sub("The default space is now {code}".format(code=default_code))
+
+    elif isinstance(default, str):
+        print(default)
+    else:
+
+        for index, code in enumerate(codes):
+            if index == 0:
+                p_ok("(default) {code}".format(index=index, code=code))
+            else:
+                print("({index}) {code}".format(index=index, code=code))

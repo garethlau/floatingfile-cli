@@ -47,39 +47,13 @@ def get_codes():
     return codes
 
 
-# TODO: Better name for setting the default code. This method should also be moved out of storage.py.
-def set_default():
-    with open(filename, "rb") as f:
-        data = pickle.load(f)
-        f.close()
-
-    p_question("Which space do you want to set as the default?")
-    data = list(filter(lambda d: does_exists(d["code"]), data))
-
-    for index, d in enumerate(data):
-        code = d["code"]
-        if index == 0:
-            p_ok("(default) {code}".format(index=index, code=code))
-        else:
-            print("({index}) {code}".format(index=index, code=code))
-
-    selection = input()
-
-    # TODO: There has to be a better way of finding an item and moving it the front
-    for index, d in enumerate(data):
-        if index == int(selection):
-            default = d
-            break
-
-    data.remove(default)
-    data.insert(0, default)
-
+def set_codes(codes):
+    data = []
+    for code in codes:
+        data.append({"code": code})
     with open(filename, "wb") as f:
         pickle.dump(data, f)
         f.close()
-
-    p_ok("Done!")
-    p_sub("The default space is now {code}".format(code=default["code"]))
 
 
 def del_code(code):
