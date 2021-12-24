@@ -297,10 +297,13 @@ def spaces(default=None):
         p_question("Which space do you want to set as the default?")
 
         for index, code in enumerate(codes):
+            url = "https://app.floatingfile.space/s/" + code
             if index == 0:
-                p_ok("(default) {code}".format(index=index, code=code))
+                p_ok("(default) {code} ({url})".format(index=index, code=code, url=url))
             else:
-                print("({index}) {code}".format(index=index, code=code))
+                print(
+                    "({index}) {code} ({url})".format(index=index, code=code, url=url)
+                )
 
         selection = input()
 
