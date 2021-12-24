@@ -3,14 +3,14 @@ import os
 import mimetypes
 import errno
 import json
-import sys
-import re
-import math
 from .storage import save_code, del_code, resolve_code, get_codes
 from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
-from .utils import get_files, does_exists, index_input
+from .utils import get_files, index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
 from .config import API_URL, BASE_HEADERS
+from .progress import progress_bar
+
+cols, rows = os.get_terminal_size()
 
 
 def destroy_space(code=None):
@@ -159,17 +159,11 @@ def download_files(path=None, code=None, a=False):
             return
         selected_files = list(map(lambda index: files[index], indexes))
 
-    total = len(selected_files)
-    for index, selected_file in enumerate(selected_files):
-        sys.stdout.write("\r")
-        sys.stdout.write(
-            "[%-30s] %d%%"
-            % ("=" * math.floor(index / total * 30), (index / total) * 100)
-        )
-        sys.stdout.flush()
+    for selected_file in progress_bar(
+        selected_files, prefix="Progress", length=cols - 20
+    ):
         r = requests.get(selected_file["signedUrl"])
         complete_file_name = selected_file["name"] + selected_file["ext"]
-
         if path is not None:
             file_path = os.path.join(path, complete_file_name)
             if not os.path.exists(os.path.dirname(file_path)):
@@ -183,9 +177,6 @@ def download_files(path=None, code=None, a=False):
 
         open(file_path, "wb").write(r.content)
 
-    sys.stdout.write("\r")
-    sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
-    sys.stdout.write("\n")
     p_ok("Done!")
 
 
@@ -235,26 +226,13 @@ def upload_files(path, code=None, a=False):
             for selected_file_path in selected_file_paths:
                 file_paths.append(os.path.join(path, selected_file_path))
 
-    total = len(file_paths)
     try:
-        for index, file_path in enumerate(file_paths):
-
-            sys.stdout.write("\r")
-            sys.stdout.write(
-                "[%-30s] %d%%"
-                % ("=" * math.floor(index / total * 30), (index / total) * 100)
-            )
-            sys.stdout.flush()
+        for file_path in progress_bar(file_paths, prefix="Progress:", length=cols - 20):
             upload_file(code, file_path)
 
-        sys.stdout.write("\r")
-        sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
-
-        sys.stdout.write("\n")
         p_ok("Done!")
 
     except MaxCapacityReached:
-        sys.stdout.write("\n")
         p_fail("Max capacity reached.")
         return
 
