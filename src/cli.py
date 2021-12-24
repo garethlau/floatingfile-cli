@@ -9,7 +9,7 @@ import math
 from .storage import save_code, del_code, resolve_code, get_codes
 from .errors import MissingCodeError, SpaceNotFoundError
 from .utils import get_files, does_exists, index_input
-from .printer import p_ok, p_question, p_fail, p_head, p_sub
+from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
 from .config import API_URL, BASE_HEADERS
 
 
@@ -79,12 +79,14 @@ def list_files(code=None):
     p_ok("Done!")
 
 
-def remove_files(code=None):
+def remove_files(code=None, a=False):
     """
     Interactively remove files from a space.
     :param code: Code of the space to remove files from. If no code is provided, an attempt will be made to use the code saved in memory.
     """
     p_head()
+
+    remove_all = a
 
     try:
         code = resolve_code(code)
@@ -96,21 +98,27 @@ def remove_files(code=None):
         return
 
     files = get_files(code)
-    p_question("Which files(s) would you like to remove?")
-    for index, file in enumerate(files):
-        complete_file_name = file["name"] + file["ext"]
-        print(
-            "({index}) {complete_file_name}".format(
-                index=index, complete_file_name=complete_file_name
-            )
-        )
 
-    try:
-        indexes = index_input(min=0, max=len(files))
-    except ValueError:
-        p_fail("Invalid input value detected.")
-        return
-    keys = list(map(lambda index: files[index]["key"], indexes))
+    if remove_all:
+        p_info("Removing all files")
+        keys = list(map(lambda file: file["key"], files))
+    else:
+        p_question("Which files(s) would you like to remove?")
+        for index, file in enumerate(files):
+            complete_file_name = file["name"] + file["ext"]
+            print(
+                "({index}) {complete_file_name}".format(
+                    index=index, complete_file_name=complete_file_name
+                )
+            )
+
+        try:
+            indexes = index_input(min=0, max=len(files))
+        except ValueError:
+            p_fail("Invalid input value detected.")
+            return
+        keys = list(map(lambda index: files[index]["key"], indexes))
+
     params = {"toRemove": json.dumps(keys)}
     requests.delete(
         API_URL + "/spaces/" + code + "/files", headers=BASE_HEADERS, params=params
@@ -118,13 +126,14 @@ def remove_files(code=None):
     p_ok("Done!")
 
 
-def download_files(path=None, code=None):
+def download_files(path=None, code=None, a=False):
     """
     Download files from a space.
     :param path: Path of directory to download files into. If no path is provided, the files will be downloaded into the current working directory.
     :param code: Code of the space to download files from. If no code is provided, an attempt will be made to use the code saved in memory.
     """
     p_head()
+    download_all = a
     try:
         code = resolve_code(code)
     except SpaceNotFoundError:
@@ -135,19 +144,22 @@ def download_files(path=None, code=None):
         return
 
     files = get_files(code)
-    p_question("Which file would you like to download?")
-    for index, file in enumerate(files):
-        print("({index}) {file_name} ".format(index=index, file_name=file["name"]))
+    if download_all:
+        p_info("Downloading all files")
+        selected_files = files
+    else:
+        p_question("Which file would you like to download?")
+        for index, file in enumerate(files):
+            print("({index}) {file_name} ".format(index=index, file_name=file["name"]))
 
-    try:
-        indexes = index_input(min=0, max=len(files))
-    except ValueError:
-        p_fail("Invalid input value detected.")
-        return
+        try:
+            indexes = index_input(min=0, max=len(files))
+        except ValueError:
+            p_fail("Invalid input value detected.")
+            return
+        selected_files = list(map(lambda index: files[index], indexes))
 
-    selected_files = map(lambda index: files[index], indexes)
-
-    total = len(indexes)
+    total = len(selected_files)
     for index, selected_file in enumerate(selected_files):
         sys.stdout.write("\r")
         sys.stdout.write(
@@ -177,13 +189,14 @@ def download_files(path=None, code=None):
     p_ok("Done!")
 
 
-def upload_files(path, code=None):
+def upload_files(path, code=None, a=False):
     """
     Upload files to a space.
     :param path: Path to file or directory. If the path provided is a directory, then an interactive prompt will be displayed to select which files in the directory are to be uploaded. If the path is a file, then the file will be uploaded.
     :param code: Code of the space to upload files to. If no code is provided, an attempt will be made to use the code saved in memory.
     """
     p_head()
+    upload_all = a
     try:
         code = resolve_code(code)
     except SpaceNotFoundError:
@@ -197,6 +210,10 @@ def upload_files(path, code=None):
 
     if os.path.isfile(path):
         file_paths.append(path)
+    elif upload_all:
+        p_info("Uploading all files")
+        for file_path in os.listdir(path):
+            file_paths.append(os.path.join(path, file_path))
     else:
         p_question("Which files do you want to upload?")
 
