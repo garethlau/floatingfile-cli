@@ -4,10 +4,11 @@ import mimetypes
 import errno
 import json
 import sys
+import re
 import math
 from .storage import save_code, del_code, resolve_code, get_codes
 from .errors import MissingCodeError, SpaceNotFoundError
-from .utils import get_files, does_exists
+from .utils import get_files, does_exists, index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub
 from .config import API_URL, BASE_HEADERS
 
@@ -92,14 +93,13 @@ def remove_files(code=None):
             )
         )
 
-    selected_ids = input()
-    selected_ids = selected_ids.split(" ")
-    selected_keys = map(lambda id: files[int(id)]["key"], selected_ids)
-    to_remove = []
-    for selected_key in selected_keys:
-        to_remove.append(selected_key)
-    to_remove = json.dumps(to_remove)
-    params = {"toRemove": to_remove}
+    try:
+        indexes = index_input(min=0, max=len(files))
+    except ValueError:
+        p_fail("Invalid input value detected.")
+        return
+    keys = list(map(lambda index: files[index]["key"], indexes))
+    params = {"toRemove": json.dumps(keys)}
     requests.delete(
         API_URL + "/spaces/" + code + "/files", headers=BASE_HEADERS, params=params
     )
@@ -125,12 +125,16 @@ def download_files(path=None, code=None):
     for index, file in enumerate(files):
         print("({index}) {file_name} ".format(index=index, file_name=file["name"]))
 
-    selected_ids = input()
+    try:
+        indexes = index_input(min=0, max=len(files))
+    except ValueError:
+        p_fail("Invalid input value detected.")
+        return
 
-    selected_ids = selected_ids.split(" ")
-    selected_files = map(lambda id: files[int(id)], selected_ids)
-    total = len(selected_ids)
-    for selected_file in selected_files:
+    selected_files = map(lambda index: files[index], indexes)
+
+    total = len(indexes)
+    for index, selected_file in enumerate(selected_files):
         sys.stdout.write("\r")
         sys.stdout.write(
             "[%-30s] %d%%"
@@ -187,11 +191,13 @@ def upload_files(path, code=None):
         for index, file_path in enumerate(os.listdir(path)):
             print("({index}) {file_path}".format(index=index, file_path=file_path))
 
-        selected_ids = input()
-        selected_ids = selected_ids.split(" ")
-        selected_ids = set(selected_ids)
+        try:
+            indexes = index_input(min=0, max=len(os.listdir(path)))
+        except ValueError:
+            p_fail("Invalid input value detected.")
+            return
 
-        selected_file_paths = map(lambda id: os.listdir(path)[int(id)], selected_ids)
+        selected_file_paths = map(lambda index: os.listdir(path)[index], indexes)
         for selected_file_path in selected_file_paths:
             file_paths.append(os.path.join(path, selected_file_path))
 
