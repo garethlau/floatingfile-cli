@@ -29,6 +29,16 @@ At the moment, the CLI has not reached feature parity with the web and iOS appli
 
 ## Installation
 
+### Linux
+
+TODO
+
+### Windows
+
+TODO
+
+### Mac
+
 1. Clone the repository
 
 ```
