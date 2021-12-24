@@ -7,7 +7,7 @@ import sys
 import re
 import math
 from .storage import save_code, del_code, resolve_code, get_codes
-from .errors import MissingCodeError, SpaceNotFoundError
+from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
 from .utils import get_files, does_exists, index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
 from .config import API_URL, BASE_HEADERS
@@ -210,42 +210,53 @@ def upload_files(path, code=None, a=False):
 
     if os.path.isfile(path):
         file_paths.append(path)
-    elif upload_all:
-        p_info("Uploading all files")
-        for file_path in os.listdir(path):
-            file_paths.append(os.path.join(path, file_path))
     else:
-        p_question("Which files do you want to upload?")
+        # Filter out directories
+        paths = list(
+            filter(lambda x: os.path.isfile(os.path.join(path, x)), os.listdir(path))
+        )
+        if upload_all:
+            p_info("Uploading all files")
+            for x in paths:
+                file_paths.append(os.path.join(path, x))
+        else:
+            p_question("Which files do you want to upload?")
 
-        for index, file_path in enumerate(os.listdir(path)):
-            print("({index}) {file_path}".format(index=index, file_path=file_path))
+            for index, file_path in enumerate(paths):
+                print("({index}) {file_path}".format(index=index, file_path=file_path))
 
-        try:
-            indexes = index_input(min=0, max=len(os.listdir(path)))
-        except ValueError:
-            p_fail("Invalid input value detected.")
-            return
+            try:
+                indexes = index_input(min=0, max=len(paths))
+            except ValueError:
+                p_fail("Invalid input value detected.")
+                return
 
-        selected_file_paths = map(lambda index: os.listdir(path)[index], indexes)
-        for selected_file_path in selected_file_paths:
-            file_paths.append(os.path.join(path, selected_file_path))
+            selected_file_paths = map(lambda index: os.listdir(path)[index], indexes)
+            for selected_file_path in selected_file_paths:
+                file_paths.append(os.path.join(path, selected_file_path))
 
     total = len(file_paths)
-    for index, file_path in enumerate(file_paths):
+    try:
+        for index, file_path in enumerate(file_paths):
+
+            sys.stdout.write("\r")
+            sys.stdout.write(
+                "[%-30s] %d%%"
+                % ("=" * math.floor(index / total * 30), (index / total) * 100)
+            )
+            sys.stdout.flush()
+            upload_file(code, file_path)
 
         sys.stdout.write("\r")
-        sys.stdout.write(
-            "[%-30s] %d%%"
-            % ("=" * math.floor(index / total * 30), (index / total) * 100)
-        )
-        sys.stdout.flush()
-        upload_file(code, file_path)
+        sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
 
-    sys.stdout.write("\r")
-    sys.stdout.write("[%-30s] %d%%" % ("=" * 30, 100))
+        sys.stdout.write("\n")
+        p_ok("Done!")
 
-    sys.stdout.write("\n")
-    p_ok("Done!")
+    except MaxCapacityReached:
+        sys.stdout.write("\n")
+        p_fail("Max capacity reached.")
+        return
 
 
 def upload_file(code, path):
@@ -263,7 +274,11 @@ def upload_file(code, path):
             url,
             json=data,
             headers=BASE_HEADERS,
-        ).json()
+        )
+        if response.status_code == 403:
+            raise MaxCapacityReached
+
+        response = response.json()
         signed_url = response["signedUrl"]
         key = response["key"]
 
