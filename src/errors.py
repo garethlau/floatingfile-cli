@@ -4,3 +4,7 @@ class SpaceNotFoundError(Exception):
 
 class MissingCodeError(Exception):
     pass
+
+
+class MaxCapacityReached(Exception):
+    pass
