@@ -25,6 +25,7 @@ At the moment, the CLI has not reached feature parity with the web and iOS appli
 - [x] Persist code between executions
 - [x] Keep a record of visited, active spaces and allow users to swap between spaces
 - [x] Upload all files in a directory
+- [ ] Sync a local directory with the contents of a space
 
 ## Installation
 
