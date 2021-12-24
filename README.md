@@ -17,6 +17,14 @@ At the moment, the CLI has not reached feature parity with the web and iOS appli
 - [ ] View users
 - [ ] View space's history (logs)
 - [ ] Download files as zip
+- [x] Download and remove all files in a space
+
+## Roadmap
+
+- [ ] Documentation and usage guides
+- [x] Persist code between executions
+- [x] Keep a record of visited, active spaces and allow users to swap between spaces
+- [x] Upload all files in a directory
 
 ## Installation
 
@@ -154,11 +162,3 @@ $ python main.py remove
 $ 0
 > Done!
 ```
-
-## Roadmap
-
-- [ ] Error handling and user feedback
-- [ ] Generate executable binary
-- [ ] Documentation and usage guides
-- [x] Persist code between executions
-- [x] Keep a record of visited, active spaces and allow users to swap between spaces
