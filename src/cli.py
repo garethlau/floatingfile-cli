@@ -289,13 +289,7 @@ def spaces(default=None):
     """
     p_head()
 
-    codes = get_codes()
-    if len(codes) == 0:
-        print("There are no spaces.")
-        return
-    if default == True:
-        p_question("Which space do you want to set as the default?")
-
+    def print_spaces():
         for index, code in enumerate(codes):
             url = "https://app.floatingfile.space/s/" + code
             if index == 0:
@@ -305,6 +299,13 @@ def spaces(default=None):
                     "({index}) {code} ({url})".format(index=index, code=code, url=url)
                 )
 
+    codes = get_codes()
+    if len(codes) == 0:
+        print("There are no spaces.")
+        return
+    if default == True:
+        p_question("Which space do you want to set as the default?")
+        print_spaces()
         selection = input()
 
         for index, code in enumerate(codes):
@@ -322,9 +323,5 @@ def spaces(default=None):
     elif isinstance(default, str):
         print(default)
     else:
+        print_spaces()
 
-        for index, code in enumerate(codes):
-            if index == 0:
-                p_ok("(default) {code}".format(index=index, code=code))
-            else:
-                print("({index}) {code}".format(index=index, code=code))
