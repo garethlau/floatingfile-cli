@@ -33,6 +33,10 @@ def p_question(*args):
     print(bcolors.OKBLUE + "? " + bcolors.ENDC + " ".join(map(str, args)))
 
 
+def p_info(*args):
+    print(bcolors.OKBLUE + "! " + bcolors.ENDC + " ".join(map(str, args)))
+
+
 def xprint(*args):
 
     print(
