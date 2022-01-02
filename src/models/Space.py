@@ -2,10 +2,10 @@ import requests
 import os
 import json
 import mimetypes
-from ..storage import get_username
 from ..errors import SpaceNotFoundError, MaxCapacityReached
 from ..config import API_URL, BASE_HEADERS
 from ..utils import best_effort_file_type
+from ..services.username import get_username
 
 
 class Space:

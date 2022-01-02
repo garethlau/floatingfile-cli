@@ -1,23 +1,15 @@
 import requests
 import os
-import mimetypes
 import errno
-import json
-from .storage import (
-    get_username,
-    save_code,
-    del_code,
-    resolve_code,
-    get_codes,
-    save_username,
-    set_codes,
-)
+from .storage import Storage
 from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
 from .utils import index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
 from .config import API_URL, BASE_HEADERS
 from .progress import progress_bar
 from .models.Space import Space
+from .services.code import resolve_code, add_code, delete_code, get_codes
+from .services.username import get_username
 
 cols, rows = os.get_terminal_size()
 
@@ -38,7 +30,7 @@ def destroy_space(code=None):
         return
 
     Space.delete(code)
-    del_code(code)
+    delete_code(code)
     # TODO: If the deleted code was the default code, notify the user of the new default
     p_ok("Done!")
 
@@ -50,7 +42,7 @@ def create_space():
     p_head()
     space = Space.create()
     code = space["code"]
-    save_code(code)
+    add_code(code)
     print("Your newly created space can be accessed here:")
     print("https://app.floatingfile.space/s/{code}".format(code=code))
     print("")
@@ -280,9 +272,10 @@ def spaces(default=None):
                 default_code = code
                 break
 
-        codes.remove(default_code)
-        codes.insert(0, default_code)
-        set_codes(codes)
+        # Remove the code then add it again
+        # Effectively moves the code to the front (default)
+        delete_code(default_code)
+        add_code(default_code)
 
         p_ok("Done!")
         p_sub("The default space is now {code}".format(code=default_code))
@@ -299,8 +292,18 @@ def config(username=None):
     :param username: Retreive the username. To update the username, pass the desired username as a string.
     """
     p_head()
+    store = Storage("settings.pkl")
+    data = store.read()
+
     if isinstance(username, str):
-        return save_username(username)
+        data["username"] = username
+        store.write(data)
+        return
+
     if isinstance(username, bool):
-        return get_username()
+        if len(data) == 0 or data["username"] is None:
+            print("No set username")
+        else:
+            print(data["username"])
+        return
     p_fail("Missing configuration property (use -h to see list of properties)")
