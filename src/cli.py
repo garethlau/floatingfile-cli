@@ -239,7 +239,7 @@ def upload_files(path, code=None, a=False):
 def upload_file(code, path):
     file_size = os.stat(path).st_size
     complete_file_name = path.split("/")[-1]
-    file_ext = "." + complete_file_name.split(".")[-1]
+    file_ext = complete_file_name.split(".")[-1]
     file_name = complete_file_name.split(".")[0]
     file_type = mimetypes.guess_type(path)[0]
 
@@ -324,4 +324,3 @@ def spaces(default=None):
         print(default)
     else:
         print_spaces()
-
