@@ -13,10 +13,11 @@ from .storage import (
     set_codes,
 )
 from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
-from .utils import best_effort_file_type, get_files, index_input
+from .utils import index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
 from .config import API_URL, BASE_HEADERS
 from .progress import progress_bar
+from .models.Space import Space
 
 cols, rows = os.get_terminal_size()
 
@@ -36,7 +37,7 @@ def destroy_space(code=None):
         p_fail("Missing required param: code.")
         return
 
-    requests.delete(API_URL + "/spaces/" + code, headers=BASE_HEADERS)
+    Space.delete(code)
     del_code(code)
     # TODO: If the deleted code was the default code, notify the user of the new default
     p_ok("Done!")
@@ -47,10 +48,8 @@ def create_space():
     Create a space. This will overwrite the code saved in memory.
     """
     p_head()
-    url = API_URL + "/spaces"
-    r = requests.post(url, headers=BASE_HEADERS)
-    data = r.json()
-    code = data["space"]["code"]
+    space = Space.create()
+    code = space["code"]
     save_code(code)
     print("Your newly created space can be accessed here:")
     print("https://app.floatingfile.space/s/{code}".format(code=code))
@@ -75,7 +74,7 @@ def list_files(code=None):
         p_fail("Missing required param: code.")
         return
 
-    files = get_files(code)
+    files = Space.get_files(code)
     if files is None or len(files) == 0:
         print("There are no files.")
         p_ok("Done!")
@@ -106,7 +105,7 @@ def remove_files(code=None, a=False):
         p_fail("Missing required param: code.")
         return
 
-    files = get_files(code)
+    files = Space.get_files(code)
 
     if remove_all:
         p_info("Removing all files")
@@ -128,12 +127,7 @@ def remove_files(code=None, a=False):
             return
         keys = list(map(lambda index: files[index]["key"], indexes))
 
-    params = {"toRemove": json.dumps(keys)}
-    headers = BASE_HEADERS
-    headers["username"] = get_username()
-    requests.delete(
-        API_URL + "/spaces/" + code + "/files", headers=headers, params=params
-    )
+    Space.remove_files(code, keys)
     p_ok("Done!")
 
 
@@ -155,7 +149,7 @@ def download_files(path=None, code=None, a=False):
         p_fail("Missing required param: code.")
         return
 
-    files = get_files(code)
+    files = Space.get_files(code)
     if download_all:
         p_info("Downloading all files")
         selected_files = files
@@ -247,64 +241,13 @@ def upload_files(path, code=None, a=False):
 
     try:
         for file_path in progress_bar(file_paths, prefix="Progress:", length=cols - 20):
-            upload_file(code, file_path)
+            Space.upload_file(code, file_path)
 
         p_ok("Done!")
 
     except MaxCapacityReached:
         p_fail("Max capacity reached.")
         return
-
-
-def upload_file(code, path):
-    file_size = os.stat(path).st_size
-    complete_file_name = path.split("/")[-1]
-    file_ext = complete_file_name.split(".")[-1]
-    file_type = mimetypes.guess_type(path, strict=False)[0]
-    if file_type is None:
-        # https://github.com/python/cpython/blob/3.10/Lib/mimetypes.py
-        # Unable to guess the mimetype, could be a non-standard ext
-        # For file extensions that we know about, let's make our best attempt to fill in the file_type data
-        file_type = best_effort_file_type(file_ext)
-
-    with open(path, "rb") as f:
-
-        url = API_URL + "/signed-urls"
-        data = {"code": code, "file": {"size": file_size}}
-
-        headers = BASE_HEADERS
-        headers["username"] = get_username()
-
-        response = requests.post(url, json=data, headers=headers)
-        if response.status_code == 403:
-            raise MaxCapacityReached
-
-        response = response.json()
-        signed_url = response["signedUrl"]
-        key = response["key"]
-
-        response = requests.put(
-            signed_url,
-            headers={"Content-type": "application/x-www-form-urlencoded"},
-            data=f,
-        )
-        if not (response.status_code == 200):
-            print("Error uploading file to AWS")
-
-        data = {
-            "size": file_size,
-            "name": complete_file_name,
-            "type": file_type,
-            "ext": file_ext,
-            "key": key,
-        }
-        response = requests.patch(
-            API_URL + "/spaces/" + code + "/files",
-            headers=BASE_HEADERS,
-            data=data,
-        )
-
-        f.close()
 
 
 def spaces(default=None):
