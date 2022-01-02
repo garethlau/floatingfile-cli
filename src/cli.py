@@ -5,7 +5,7 @@ import errno
 import json
 from .storage import save_code, del_code, resolve_code, get_codes, set_codes
 from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
-from .utils import get_files, index_input
+from .utils import best_effort_file_type, get_files, index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
 from .config import API_URL, BASE_HEADERS
 from .progress import progress_bar
@@ -241,6 +241,11 @@ def upload_file(code, path):
     complete_file_name = path.split("/")[-1]
     file_ext = complete_file_name.split(".")[-1]
     file_type = mimetypes.guess_type(path, strict=False)[0]
+    if file_type is None:
+        # https://github.com/python/cpython/blob/3.10/Lib/mimetypes.py
+        # Unable to guess the mimetype, could be a non-standard ext
+        # For file extensions that we know about, let's make our best attempt to fill in the file_type data
+        file_type = best_effort_file_type(file_ext)
 
     with open(path, "rb") as f:
 
