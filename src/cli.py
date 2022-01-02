@@ -185,7 +185,7 @@ def download_files(path=None, code=None, a=False):
         )
         # Download the file
         r = requests.get(selected_file["signedUrl"])
-        complete_file_name = selected_file["name"] + selected_file["ext"]
+        complete_file_name = selected_file["name"]
         if path is not None:
             file_path = os.path.join(path, complete_file_name)
             if not os.path.exists(os.path.dirname(file_path)):
