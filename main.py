@@ -7,6 +7,7 @@ from src.cli import (
     download_files,
     upload_files,
     spaces,
+    config,
 )
 
 
@@ -20,5 +21,6 @@ if __name__ == "__main__":
             "download": download_files,
             "upload": upload_files,
             "spaces": spaces,
+            "config": config,
         }
     )
