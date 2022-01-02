@@ -51,3 +51,11 @@ def index_input(min=0, max=None):
         indexes.add(index)
 
     return list(indexes)
+
+
+def best_effort_file_type(ext):
+    match ext:
+        case "md":
+            return "text/markdown"
+        case _:
+            return "application/octet-stream"
