@@ -171,9 +171,19 @@ def download_files(path=None, code=None, a=False):
             return
         selected_files = list(map(lambda index: files[index], indexes))
 
+    headers = BASE_HEADERS
+    headers["username"] = get_username()
+
     for selected_file in progress_bar(
         selected_files, prefix="Progress", length=cols - 20
     ):
+        # Make a request to add this download event to the space's history
+        requests.patch(
+            API_URL + "/spaces/" + code + "/history",
+            headers=headers,
+            data={"action": "DOWNLOAD_FILE", "payload": selected_file["key"]},
+        )
+        # Download the file
         r = requests.get(selected_file["signedUrl"])
         complete_file_name = selected_file["name"] + selected_file["ext"]
         if path is not None:
