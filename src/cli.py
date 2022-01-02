@@ -3,7 +3,15 @@ import os
 import mimetypes
 import errno
 import json
-from .storage import save_code, del_code, resolve_code, get_codes, set_codes
+from .storage import (
+    get_username,
+    save_code,
+    del_code,
+    resolve_code,
+    get_codes,
+    save_username,
+    set_codes,
+)
 from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
 from .utils import best_effort_file_type, get_files, index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
@@ -121,8 +129,10 @@ def remove_files(code=None, a=False):
         keys = list(map(lambda index: files[index]["key"], indexes))
 
     params = {"toRemove": json.dumps(keys)}
+    headers = BASE_HEADERS
+    headers["username"] = get_username()
     requests.delete(
-        API_URL + "/spaces/" + code + "/files", headers=BASE_HEADERS, params=params
+        API_URL + "/spaces/" + code + "/files", headers=headers, params=params
     )
     p_ok("Done!")
 
@@ -251,11 +261,11 @@ def upload_file(code, path):
 
         url = API_URL + "/signed-urls"
         data = {"code": code, "file": {"size": file_size}}
-        response = requests.post(
-            url,
-            json=data,
-            headers=BASE_HEADERS,
-        )
+
+        headers = BASE_HEADERS
+        headers["username"] = get_username()
+
+        response = requests.post(url, json=data, headers=headers)
         if response.status_code == 403:
             raise MaxCapacityReached
 
@@ -328,3 +338,16 @@ def spaces(default=None):
         print(default)
     else:
         print_spaces()
+
+
+def config(username=None):
+    """
+    Access and set configurations.
+    :param username: Retreive the username. To update the username, pass the desired username as a string.
+    """
+    p_head()
+    if isinstance(username, str):
+        return save_username(username)
+    if isinstance(username, bool):
+        return get_username()
+    p_fail("Missing configuration property (use -h to see list of properties)")
