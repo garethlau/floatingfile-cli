@@ -11,6 +11,34 @@ def mem_exists():
     return os.path.isfile(filename)
 
 
+def save_username(username):
+    config_filename = os.path.join(os.getenv("HOME"), ".floatingfile", "config.pkl")
+    if not os.path.isfile(config_filename):
+        data = {}
+    else:
+        f = open(config_filename, "rb")
+        data = pickle.load(f)
+        f.close()
+
+    data["username"] = username
+
+    os.makedirs(os.path.dirname(config_filename), exist_ok=True)
+    with open(config_filename, "wb+") as f:
+        pickle.dump(data, f)
+        f.close()
+
+
+def get_username():
+    config_filename = os.path.join(os.getenv("HOME"), ".floatingfile", "config.pkl")
+    if not os.path.isfile(config_filename):
+        return None
+    f = open(config_filename, "rb")
+    data = pickle.load(f)
+    f.close()
+
+    return data["username"]
+
+
 def save_code(code):
     code = code.upper()
     if not mem_exists():
