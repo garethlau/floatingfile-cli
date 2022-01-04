@@ -39,39 +39,27 @@ TODO
 
 ### Mac
 
-1. Clone the repository
+The floatingfile CLI can be installed with the [installation script](/scripts/install.sh) or by executing the following commands.
+
+1. Download and extract the latest binary
 
 ```
-$ git clone https://github.com/garethlau/floatingfile-cli.git
-$ cd floatingfile-cli
+$ curl -L https://github.com/garethlau/floatingfile-cli/releases/download/v1.1.3/floatingfile-v1.1.3.tar.gz | tar -xz
 ```
 
-2. Bundle the app
-
-_You may need to enable the execution permission for the script by running: `chmod +x ./scripts/bundle.sh`._
+2. Move the application to the appropriate folder
 
 ```
-$ ./scripts/bundle.sh
+$ sudo mv floatingfile /opt/
 ```
 
-This will generate a `dist` folder that contains the executable, `floatingfile`, as well as all necessary dependencies.
+3. Create symlink to access the floatingfile CLI globally. By default, Mac OS X has `/usr/local/bin` in the `PATH`.
 
-3. Create a symlink for global access.
-
-By default, Mac OS X has `/usr/local/bin` in the `PATH`.
-
-```
-$ sudo ln -s "$PWD/dist/floatingfile/floatingfile" /usr/local/bin
+```bash
+sudo ln -s /opt/floatingfile/floatingfile /usr/local/bin
 ```
 
-4. Check that the executable is accessible
-
-```
-$ which floatingfile
-> /usr/local/bin/floatingfile
-```
-
-5. **OPTIONAL** but recommended: You can rename the executable for easier usage.
+4. **OPTIONAL** but recommended: You can rename the executable for easier usage.
 
 ```
 $ mv /usr/local/bin/floatingfile /usr/local/bin/ff
