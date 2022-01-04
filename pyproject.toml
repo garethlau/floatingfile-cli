@@ -1,0 +1,16 @@
+[build-system]
+requires = [
+    "altgraph",
+    "certifi",
+    "charset-normalizer",
+    "fire",
+    "idna",
+    "macholib",
+    "pyinstaller",
+    "pyinstaller-hooks-contrib",
+    "python-dotenv",
+    "requests",
+    "six",
+    "termcolor",
+    "urllib3"
+]
