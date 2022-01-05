@@ -1,15 +1,14 @@
 import requests
 import os
 import errno
-from .storage import Storage
 from .errors import MissingCodeError, SpaceNotFoundError, MaxCapacityReached
 from .utils import index_input
 from .printer import p_ok, p_question, p_fail, p_head, p_sub, p_info
-from .config import API_URL, BASE_HEADERS
+from .config import API_URL, BASE_HEADERS, get_download_path, get_username
 from .progress import progress_bar
 from .models.Space import Space
 from .services.code import resolve_code, add_code, delete_code, get_codes
-from .services.username import get_username
+
 
 cols, rows = os.get_terminal_size()
 
@@ -172,16 +171,25 @@ def download_files(path=None, code=None, a=False):
         # Download the file
         r = requests.get(selected_file["signedUrl"])
         complete_file_name = selected_file["name"]
+        default_download_path = get_download_path(code)
         if path is not None:
+            # User explicitly provided destination to download files into
             file_path = os.path.join(path, complete_file_name)
-            if not os.path.exists(os.path.dirname(file_path)):
-                try:
-                    os.makedirs(os.path.dirname(file_path))
-                except OSError as exc:  # Guard against race condition
-                    if exc.errno != errno.EEXIST:
-                        raise
+        elif default_download_path:
+            # Not download dir provided, fallback to default
+            file_path = os.path.join(default_download_path, complete_file_name)
         else:
+            # For whatever reason, the default download dir cannot be read
+            # Download relative to the execution location
             file_path = complete_file_name
+
+        # Ensure that neccessary directorys exist before writing to the file
+        if not os.path.exists(os.path.dirname(file_path)):
+            try:
+                os.makedirs(os.path.dirname(file_path))
+            except OSError as exc:  # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
 
         open(file_path, "wb").write(r.content)
 
@@ -284,26 +292,3 @@ def spaces(default=None):
         print(default)
     else:
         print_spaces()
-
-
-def config(username=None):
-    """
-    Access and set configurations.
-    :param username: Retreive the username. To update the username, pass the desired username as a string.
-    """
-    p_head()
-    store = Storage("settings.pkl")
-    data = store.read()
-
-    if isinstance(username, str):
-        data["username"] = username
-        store.write(data)
-        return
-
-    if isinstance(username, bool):
-        if len(data) == 0 or data["username"] is None:
-            print("No set username")
-        else:
-            print(data["username"])
-        return
-    p_fail("Missing configuration property (use -h to see list of properties)")
