@@ -3,9 +3,8 @@ import os
 import json
 import mimetypes
 from ..errors import SpaceNotFoundError, MaxCapacityReached
-from ..config import API_URL, BASE_HEADERS
+from ..config import API_URL, BASE_HEADERS, get_username
 from ..utils import best_effort_file_type
-from ..services.username import get_username
 
 
 class Space:
