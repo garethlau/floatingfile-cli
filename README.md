@@ -39,12 +39,12 @@ TODO
 
 ### Mac
 
-The floatingfile CLI can be installed with the [installation script](/scripts/install.sh) or by executing the following commands.
+The floatingfile CLI can be installed with the [installation script](/scripts/install.sh) or by executing the following commands. Be sure to double check the [releases page](https://github.com/garethlau/floatingfile-cli/releases) to ensure the latest version is being downloaded.
 
 1. Download and extract the latest binary
 
 ```
-$ curl -L https://github.com/garethlau/floatingfile-cli/releases/download/v1.1.3/floatingfile-v1.1.3.tar.gz | tar -xz
+$ curl -L https://github.com/garethlau/floatingfile-cli/releases/download/v1.2.0/floatingfile-v1.2.0.tar.gz | tar -xz
 ```
 
 2. Move the application to the appropriate folder
