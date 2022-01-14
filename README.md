@@ -1,3 +1,5 @@
+**This repository is no longer active. The floatingfile CLI has migrated into the [monorepo](https://github.com/garethlau/floatingfile).**
+
 # The Official CLI for floatingfile
 
 ![](/.github/assets/banner.jpg)
